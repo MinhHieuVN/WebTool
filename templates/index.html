@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Garena Panel</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<h1>🔥 Garena Web Panel</h1>
+
+<h2>Add Token</h2>
+<input id="newtoken" placeholder="Access Token">
+<button onclick="saveToken()">Save</button>
+<button onclick="loadTokens()">Load Accounts</button>
+
+<div id="accounts"></div>
+
+<hr>
+
+<h2>Manual Tool</h2>
+
+<input id="token" placeholder="Access Token">
+<input id="email" placeholder="Email">
+<input id="otp" placeholder="OTP">
+
+<button onclick="api('bind_info')">Bind Info</button>
+<button onclick="api('platforms')">Platforms</button>
+<button onclick="api('cancel')">Cancel</button>
+<button onclick="api('revoke')">Revoke</button>
+
+<button onclick="sendOtp()">Send OTP</button>
+<button onclick="verifyOtp()">Verify OTP</button>
+
+<pre id="out"></pre>
+
+<script>
+
+function api(name){
+fetch(`/api/${name}?token=${token.value}`)
+.then(r=>r.json())
+.then(d=>out.textContent=JSON.stringify(d,null,2))
+}
+
+function sendOtp(){
+fetch('/api/send_otp',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({token:token.value,email:email.value})
+}).then(r=>r.json())
+.then(d=>out.textContent=JSON.stringify(d,null,2))
+}
+
+function verifyOtp(){
+fetch('/api/verify_otp',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({
+token:token.value,
+email:email.value,
+otp:otp.value})
+}).then(r=>r.json())
+.then(d=>out.textContent=JSON.stringify(d,null,2))
+}
+
+function saveToken(){
+fetch('/api/save_token',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({token:newtoken.value})
+}).then(loadTokens)
+}
+
+function loadTokens(){
+fetch('/api/tokens')
+.then(r=>r.json())
+.then(list=>{
+accounts.innerHTML=""
+list.forEach(acc=>{
+accounts.innerHTML+=`
+<div class="card">
+UID: ${acc.uid}<br>
+Nick: ${acc.nickname}<br>
+Region: ${acc.region}<br>
+<button onclick="revokeSaved(${acc.id})">Revoke</button>
+<button onclick="del(${acc.id})">Delete</button>
+</div>`
+})
+})
+}
+
+function del(id){
+fetch('/api/delete_token/'+id).then(loadTokens)
+}
+
+function revokeSaved(id){
+fetch('/api/revoke_saved/'+id).then(loadTokens)
+}
+
+</script>
+
+</body>
+</html>
