@@ -208,5 +208,4 @@ def revoke():
         params={"access_token":token})
     return jsonify({"status":r.status_code})
 
-if __name__=="__main__":
-    app.run()
+return jsonify({"status":r.status_code})
