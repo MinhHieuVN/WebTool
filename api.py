@@ -1,11 +1,11 @@
 from flask import Flask,request,jsonify,render_template
 import requests,sqlite3,hashlib
 
-app=Flask(__name__)
+app = Flask(__name__, template_folder="templates")
 
 BASE_URL="https://100067.connect.garena.com"
 APP_ID="100067"
-
+w
 HEADERS={
 "User-Agent":"GarenaMSDK/4.0.39 (Android)",
 "Content-Type":"application/x-www-form-urlencoded"
@@ -14,7 +14,7 @@ HEADERS={
 # ================= DATABASE =================
 
 def init_db():
-    conn=sqlite3.connect("database.db")
+    conn=sqlite3.connect("/tmp/database.db")
     c=conn.cursor()
     c.execute("""
     CREATE TABLE IF NOT EXISTS tokens(
